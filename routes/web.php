@@ -15,6 +15,7 @@ Route::get('/', function () {
         'birthdate' => '1974-08-07 00:00:00'
     ];
     $customer = Charlie\Customer::create($data);
+    
     dd($customer->toArray());
 
     // TRAZER CUSTOMER ID 2
