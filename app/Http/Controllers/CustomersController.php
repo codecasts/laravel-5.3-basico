@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use Charlie\Http\Requests;
 use Charlie\Customer;
+use Charlie\Http\Requests\CustomerFormRequest;
 
 class CustomersController extends Controller
 {
@@ -60,7 +61,12 @@ class CustomersController extends Controller
      */
     public function edit($id)
     {
-        //
+        $customer = Customer::find($id);
+        $customersForSelect = Customer::groupBy('state')
+            ->get(['state'])
+            ->pluck('state', 'state');
+
+        return view('customers.edit')->with(compact('customer', 'customersForSelect'));
     }
 
     /**
@@ -70,9 +76,16 @@ class CustomersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CustomerFormRequest $request, $id)
     {
-        //
+        $input = $request->only('name', 'special_customer', 'city', 'state');
+        $input['special_customer'] = isset($input['special_customer']);
+        $customer = Customer::find($id);
+        $customer->fill($input);
+        $customer->save();
+        return redirect()
+            ->route('clientes.edit', $id)
+            ->with(['success' => 'Cliente salvo com sucesso!']);
     }
 
     /**
